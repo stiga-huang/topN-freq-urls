@@ -6,7 +6,7 @@ using namespace std;
 using namespace topN_freq;
 
 int main(int argc, char **argv) {
-  if (argc < 3) {
+  if (argc < 4) {
     cerr << "Too few arguments!" << endl;
     cerr << "Args: file_path num_results mem_limit_in_gb" << endl;
     return 1;
