@@ -1,4 +1,6 @@
+#include <algorithm>
 #include <vector>
+#include <cstring>
 #include <queue>
 #include <stack>
 #include <iostream>

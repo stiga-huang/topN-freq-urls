@@ -2,6 +2,7 @@
 #define TOPN_FREQ_URLS_DATA_H
 
 #include <cstdint>
+#include <string>
 
 namespace topN_freq {
 

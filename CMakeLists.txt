@@ -28,7 +28,19 @@ endif()
 
 MESSAGE(STATUS "Compiler Flags: ${CMAKE_CXX_FLAGS}")
 
+set (GTEST_VERSION "1.8.1")
+set (GTEST_INCLUDE_DIRS
+        "${CMAKE_SOURCE_DIR}/libs/googletest-${GMOCK_VERSION}/googletest/include"
+)
+set (GTEST_LIBRARIES gtest)
+if(NOT APPLE AND NOT MSVC)
+    list (APPEND GTEST_LIBRARIES pthread)
+endif(NOT APPLE AND NOT MSVC)
+
 add_subdirectory(src)
 add_subdirectory(test)
+add_subdirectory(libs/googletest-${GTEST_VERSION})
 
 add_executable(topN_freq_urls src/main.cpp src/mem-pool.h src/mem-pool.cpp src/file-manager.cpp src/file-manager.h src/data.h src/topn-freq-urls.h src/topn-freq-urls.cpp)
+# link profiler if it's installed
+#target_link_libraries(topN_freq_urls profiler)
