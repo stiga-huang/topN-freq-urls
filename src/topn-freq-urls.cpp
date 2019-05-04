@@ -46,9 +46,11 @@ void TopNFreqUrls::Run() {
   std::vector<StringVal> urls;
   while (file_mgr_.ReadLine(MAX_URL_LEN, url_buf_, &str.len)) {
     str.ptr = mem_pool_.TryAllocate(str.len);
-    // Spill to disk if  MemPool is full
-    if (str.ptr == nullptr) AggregateAndSpillToDisk(urls);
-    str.ptr = mem_pool_.TryAllocate(str.len);
+    // Spill to disk if MemPool is full
+    if (str.ptr == nullptr) {
+      AggregateAndSpillToDisk(urls);
+      str.ptr = mem_pool_.TryAllocate(str.len);
+    }
     // DCHECK(str.ptr != nullptr);
     memcpy(str.ptr, url_buf_, str.len);
     urls.push_back(str);

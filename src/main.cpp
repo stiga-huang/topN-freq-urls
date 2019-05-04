@@ -8,12 +8,12 @@ using namespace topN_freq;
 int main(int argc, char **argv) {
   if (argc < 4) {
     cerr << "Too few arguments!" << endl;
-    cerr << "Args: file_path num_results mem_limit_in_gb" << endl;
+    cerr << "Args: file_path num_results mem_limit_in_mb" << endl;
     return 1;
   }
   const char* file_path = argv[1];
   int num_results = atoi(argv[2]);
-  uint64_t mem_limit = atoi(argv[3]) * 1024L * 1024L * 1024L;
+  uint64_t mem_limit = atoi(argv[3]) * 1024L * 1024L;
   cout << "Number of results: " << num_results << endl;
   cout << "Mem Limit: " << mem_limit << " bytes" << endl;
   cout << "Processsing input file " << file_path << "..." << endl;
