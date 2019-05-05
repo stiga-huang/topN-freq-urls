@@ -27,6 +27,16 @@ class TopNFreqUrls {
   /// Each time we create a new spilled file.
   void AggregateAndSpillToDisk(std::vector<StringVal>& urls);
 
+  /// First stage of the external sorting: load urls into memory and spill sorted results
+  /// into files. The sorted results will be pre-aggregated to reduce spilled size.
+  void PartialSort();
+  /// Second stage of the external sorting: merge sorted files and get results.
+  void MergeSort(std::vector<ResultTuple>* results);
+
+  /// Update the heap with a new value 'tuple'. The heap will still in size of
+  /// 'number_results'. Memory reference by eliminated results will be released.
+  void UpdateHeap(ResultTuple tuple, std::priority_queue<ResultTuple>* heap);
+
   int num_results_;
   char url_buf_[MAX_URL_LEN + 1];
   MemTracker mem_tracker_;

@@ -56,7 +56,6 @@ bool FileManager::NewOutputFile() {
 }
 
 void FileManager::WriteResultTuple(ResultTuple& res) {
-  //std::cout << string(res.str.ptr, res.str.len) << endl;
   out_.write(res.str.ptr, res.str.len);
   out_ << '\t' << res.cnt << endl;
 }
@@ -100,11 +99,16 @@ bool FileMerger::OpenInternal(int num_files) {
 }
 
 bool FileMerger::Close() {
-  if (!test_mode) {
-    for (istream* s : sorted_files_) {
-      reinterpret_cast<ifstream*&>(s)->close();
-      delete s;
-    }
+  // in unit tests, we don't open any files so just return.
+  if (test_mode) return true;
+  for (istream* s : sorted_files_) {
+    reinterpret_cast<ifstream*&>(s)->close();
+    delete s;
+  }
+  int num_files = sorted_files_.size();
+  for (int i = 0; i < num_files; ++i) {
+    string file_name = FileManager::OutputFileName(base_file_name_, i);
+    remove(file_name.c_str());
   }
   return true;
 }

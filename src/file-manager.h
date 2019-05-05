@@ -61,7 +61,6 @@ class FileMerger {
   bool OpenInternal(int num_files);
 
   const char* base_file_name_;
-  char url_buffer_[MAX_URL_LEN + 1];
   MemPool* mem_pool_;
   std::vector<std::istream*> sorted_files_;
   /// Drained labels for each file

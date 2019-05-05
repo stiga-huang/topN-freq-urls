@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <vector>
 #include <cstring>
+#include <ctime>
 #include <queue>
 #include <stack>
 #include <iostream>
@@ -40,7 +41,7 @@ void TopNFreqUrls::AggregateAndSpillToDisk(std::vector<StringVal>& urls) {
   urls.clear();
 }
 
-void TopNFreqUrls::Run() {
+void TopNFreqUrls::PartialSort() {
   file_mgr_.Open();
   StringVal str;
   std::vector<StringVal> urls;
@@ -57,9 +58,21 @@ void TopNFreqUrls::Run() {
   }
   if (!urls.empty()) AggregateAndSpillToDisk(urls);
   file_mgr_.Close();
+}
 
+inline void TopNFreqUrls::UpdateHeap(ResultTuple tuple,
+    std::priority_queue<ResultTuple>* heap) {
+  heap->push(tuple);
+  while (heap->size() > num_results_) {
+    mem_pool_.Free(heap->top().str.ptr);
+    heap->pop();
+  }
+}
+
+void TopNFreqUrls::MergeSort(std::vector<ResultTuple>* results) {
   // From now on we don't have memory pressure, so we don't need to track the memory
-  // anymore.
+  // anymore. We maintain a min heap containing the topN results. The url with less
+  // occurrence will be on the heap top.
   std::priority_queue<ResultTuple> topN_tuples;
   file_merger_.Open(file_mgr_.TotalOutputFiles());
   ResultTuple curr_tuple;
@@ -74,31 +87,35 @@ void TopNFreqUrls::Run() {
       curr_tuple.cnt += next_tuple.cnt;
       mem_pool_.Free(next_tuple.str.ptr);
     } else {
-      topN_tuples.push(curr_tuple);
-      while (topN_tuples.size() > num_results_) {
-        mem_pool_.Free(topN_tuples.top().str.ptr);
-        topN_tuples.pop();
-      }
+      UpdateHeap(curr_tuple, &topN_tuples);
       curr_tuple = next_tuple;
     }
   }
   if (!curr_tuple.IsEmpty()) {
-    topN_tuples.push(curr_tuple);
-    while (topN_tuples.size() > num_results_) {
-      mem_pool_.Free(topN_tuples.top().str.ptr);
-      topN_tuples.pop();
-    }
+    UpdateHeap(curr_tuple, &topN_tuples);
   }
-
-  std::stack<ResultTuple> results;
-  while (!topN_tuples.empty()) {
-    results.push(topN_tuples.top());
+  file_merger_.Close();
+  results->resize(num_results_);
+  for (int i = num_results_ - 1; i >= 0; --i) {
+    (*results)[i] = topN_tuples.top();
     topN_tuples.pop();
   }
-  while (!results.empty()) {
-    ResultTuple tuple = results.top();
+}
+
+void TopNFreqUrls::Run() {
+  clock_t spill_begin = clock();
+  PartialSort();
+  clock_t spill_end = clock();
+  vector<ResultTuple> results;
+  MergeSort(&results);
+  clock_t merge_end = clock();
+
+  for (ResultTuple tuple : results) {
     cout << tuple.toString() << endl;
-    results.pop();
   }
+  cout << "Spill stage: " << double(spill_end - spill_begin) / CLOCKS_PER_SEC
+       << "s" << endl
+       << "Merge stage: " << double(merge_end - spill_end) / CLOCKS_PER_SEC
+       << "s" << endl;
 }
 }
