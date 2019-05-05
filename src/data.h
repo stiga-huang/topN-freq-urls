@@ -3,6 +3,7 @@
 
 #include <cstdint>
 #include <string>
+#include <cstring>
 
 namespace topN_freq {
 
@@ -11,12 +12,7 @@ struct StringVal {
   size_t len;
 
   bool operator<(const StringVal& other) const {
-    int min_len = len <= other.len ? len : other.len;
-    for (int i = 0; i < min_len; ++i) {
-      if (ptr[i] < other.ptr[i]) return true;
-      if (ptr[i] > other.ptr[i]) return false;
-    }
-    return len < other.len;
+    return StrCompare(other) < 0;
   }
 
   bool StrEquals(const StringVal& other) const {
@@ -25,12 +21,11 @@ struct StringVal {
 
   /// Compare with other StringVal. Return 0 for equals. Return negative value
   /// if 'other' is larger. Return positive value if 'other' is smaller.
-  int StrCompare(const StringVal& other) const {
-    for (int i = 0, j = 0; i < len && j < other.len; ++i, ++j) {
-      if (ptr[i] < other.ptr[j]) return -1;
-      if (ptr[i] > other.ptr[j]) return 1;
-    }
-    return (int)len - (int)other.len;
+  inline int StrCompare(const StringVal& other) const {
+    int min_len = len <= other.len ? len : other.len;
+    int cmp = memcmp(ptr, other.ptr, min_len);
+    if (cmp == 0) return (int)len - (int)other.len;
+    return cmp;
   }
 
   std::string toString() {
@@ -75,8 +70,7 @@ struct StringLess {
   bool operator()(const ResultTuple& a, const ResultTuple& b) {
     int cmp = a.str.StrCompare(b.str);
     if (cmp == 0) return a.cnt > b.cnt;
-    if (cmp < 0) return false;
-    return true;
+    return cmp > 0;
   }
 };
 }
