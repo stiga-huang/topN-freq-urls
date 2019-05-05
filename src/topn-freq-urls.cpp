@@ -95,8 +95,12 @@ void TopNFreqUrls::MergeSort(std::vector<ResultTuple>* results) {
     UpdateHeap(curr_tuple, &topN_tuples);
   }
   file_merger_.Close();
-  results->resize(num_results_);
-  for (int i = num_results_ - 1; i >= 0; --i) {
+  if (topN_tuples.empty()) {
+    cout << "No urls scanned!" << endl;
+    return;
+  }
+  results->resize(topN_tuples.size());
+  for (int i = topN_tuples.size() - 1; i >= 0; --i) {
     (*results)[i] = topN_tuples.top();
     topN_tuples.pop();
   }

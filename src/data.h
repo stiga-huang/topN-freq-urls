@@ -45,7 +45,7 @@ struct ResultTuple {
   int file_index;
 
   /// Operator used in the heap (priority queue). The worst one will be on the top.
-  /// So less counts or larger strings is treated as worst.
+  /// So less counts or larger strings is treated as worst(larger).
   bool operator<(const ResultTuple& other) const{
     if (cnt > other.cnt) return true;
     if (cnt < other.cnt) return false;
@@ -68,9 +68,10 @@ struct ResultTuple {
 };
 
 /// Compare function used in merge sort stage. The URLs in spilled files are sorted
-/// by string. So we should still use the string order to merge.
+/// by string ascendingly. So we should still use the string order to merge. A min heap
+/// is used in merging spilled files. So the smallest string will be on the heap top.
 struct StringLess {
-  /// Return false if 'a' should be placed on top of 'b' in the priority queue
+  /// Return false if 'a' should be placed on top of 'b' in the priority queue (i.e. a>b)
   bool operator()(const ResultTuple& a, const ResultTuple& b) {
     int cmp = a.str.StrCompare(b.str);
     if (cmp == 0) return a.cnt > b.cnt;

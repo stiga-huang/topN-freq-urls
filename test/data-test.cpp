@@ -54,13 +54,14 @@ TEST(ResultTupleTest, Order) {
   ResultTuple t1, t2;
   InitResultTuple("aaa", 1, &t1);
   InitResultTuple("bbb", 2, &t2);
-  EXPECT_TRUE(t1 < t2); // The worst the smaller
-  EXPECT_FALSE(t2 < t1);
+  // The worst the larger. So will be on the top of the priority queue.
+  EXPECT_FALSE(t1 < t2);
+  EXPECT_TRUE(t2 < t1);
 
   InitResultTuple("aaa", 1, &t1);
   InitResultTuple("bbb", 1, &t2);
-  EXPECT_TRUE(t2 < t1);
-  EXPECT_FALSE(t1 < t2);
+  EXPECT_TRUE(t1 < t2);
+  EXPECT_FALSE(t2 < t1);
 }
 
 TEST(ResultTupleTest, StrEqual) {
@@ -75,7 +76,7 @@ TEST(StringLessTest, Basic) {
   ResultTuple t1, t2;
   InitResultTuple("aaa", 1, &t1);
   InitResultTuple("bbb", 2, &t2);
-  EXPECT_TRUE(comparator(t1, t2));
-  EXPECT_FALSE(comparator(t2, t1));
+  EXPECT_FALSE(comparator(t1, t2));
+  EXPECT_TRUE(comparator(t2, t1));
 }
 }

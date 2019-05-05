@@ -10,7 +10,7 @@
 
 namespace topN_freq {
 
-const unsigned int MAX_URL_LEN = 1024;
+const unsigned int MAX_URL_LEN = 1025;
 
 /// Manager for the input file and spill files.
 class FileManager {

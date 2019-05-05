@@ -17,7 +17,10 @@ int main(int argc, char **argv) {
   cout << "Number of results: " << num_results << endl;
   cout << "Mem Limit: " << mem_limit << " bytes" << endl;
   cout << "Processsing input file " << file_path << "..." << endl;
-
+  if (num_results <= 0 || mem_limit <= 0) {
+    cerr << "Illegal arguments!" << endl;
+    return 1;
+  }
   TopNFreqUrls instance(file_path, num_results, mem_limit);
   instance.Run();
   return 0;

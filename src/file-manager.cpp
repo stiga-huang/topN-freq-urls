@@ -9,17 +9,12 @@ namespace topN_freq {
 
 bool FileManager::ReadLine(istream& in, unsigned int max_len, char* buffer,
     size_t* str_len, char delimiter) {
-  *str_len = 0;
-  char c;
-  while (in.get(c)) {
-    if (c == delimiter || c == '\0') {
-      if (*str_len > 0) return true;
-      continue; // skip empty lines and continue to read a URL
-    }
-    buffer[(*str_len)++] = c;
-    if (*str_len == max_len) return true;
+  if (in.get(buffer, max_len, delimiter)) {
+    *str_len = in.gcount();
+    in.get(); // read the tailing delimiter
+    return true;
   }
-  return false; // get here only at end of file
+  return false;
 }
 
 string FileManager::OutputFileName(const char* base_file_name, int file_index) {
@@ -73,6 +68,7 @@ bool FileMerger::NextResultTupleInFile(std::istream* in, MemPool *pool, ResultTu
 }
 
 bool FileMerger::Open(int num_files) {
+  drained_.resize(num_files, false);
   if (!test_mode) OpenInternal(num_files);
   // init the min heap
   for (int i = 0; i < num_files; ++i) {
@@ -89,7 +85,6 @@ bool FileMerger::Open(int num_files) {
 }
 
 bool FileMerger::OpenInternal(int num_files) {
-  drained_.resize(num_files);
   for (int i = 0; i < num_files; ++i) {
     sorted_files_.push_back(new ifstream(
         FileManager::OutputFileName(base_file_name_, i), ifstream::in));
