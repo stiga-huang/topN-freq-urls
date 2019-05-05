@@ -22,7 +22,7 @@ class FileManager {
   bool Close();
   bool NewOutputFile();
   bool ReadLine(unsigned int max_len, char* buffer, size_t* str_len);
-  void WriteResultTuple(ResultTuple& res);
+  bool WriteResultTuple(ResultTuple& res);
   int TotalOutputFiles() { return output_files_; }
 
   /// Read a URL (separated by '\n' by defaults) into the 'buffer' and return the

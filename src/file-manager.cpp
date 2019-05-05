@@ -31,6 +31,10 @@ FileManager::~FileManager() {
 
 bool FileManager::Open() {
   in_.open(file_name_, ifstream::in);
+  if (in_.fail()) {
+    cerr << "Failed to open " << file_name_ << ": " << strerror(errno) << endl;
+    return false;
+  }
   return true;
 }
 
@@ -47,12 +51,21 @@ bool FileManager::ReadLine(unsigned int max_len, char* buffer, size_t* str_len) 
 bool FileManager::NewOutputFile() {
   out_.close();
   out_.open(OutputFileName(file_name_, output_files_++), ofstream::out);
+  if (out_.fail()) {
+    cerr << "Failed to open " << file_name_ << ": " << strerror(errno) << endl;
+    return false;
+  }
   return true;
 }
 
-void FileManager::WriteResultTuple(ResultTuple& res) {
+bool FileManager::WriteResultTuple(ResultTuple& res) {
   out_.write(res.str.ptr, res.str.len);
   out_ << '\t' << res.cnt << endl;
+  if (out_.fail()) {
+    cerr << "Failed write middle results: " << strerror(errno) << endl;
+    return false;
+  }
+  return true;
 }
 
 bool FileMerger::NextResultTupleInFile(std::istream* in, MemPool *pool, ResultTuple* res) {
