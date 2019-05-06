@@ -63,6 +63,7 @@ bool TopNFreqUrls::PartialSort() {
     // DCHECK(str.ptr != nullptr);
     memcpy(str.ptr, url_buf_, str.len);
     urls.push_back(str);
+    ++urls_scanned_;
   }
   if (!urls.empty()) {
     RETURN_ON_FALSE(AggregateAndSpillToDisk(urls));
@@ -131,6 +132,9 @@ void TopNFreqUrls::Run() {
   cout << "Spill stage: " << double(spill_end - spill_begin) / CLOCKS_PER_SEC
        << "s" << endl
        << "Merge stage: " << double(merge_end - spill_end) / CLOCKS_PER_SEC
-       << "s" << endl;
+       << "s" << endl
+       << "Total time: " << double(merge_end - spill_begin) / CLOCKS_PER_SEC
+       << "s" << endl
+       << "Scanned URLs: " << urls_scanned_ << endl;
 }
 }

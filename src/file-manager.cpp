@@ -9,10 +9,25 @@ namespace topN_freq {
 
 bool FileManager::ReadLine(istream& in, unsigned int max_len, char* buffer,
     size_t* str_len, char delimiter) {
+  // skip leading delimiters
+  char c = delimiter;
+  while (c == delimiter && in.get(c));
+  if (c == delimiter) {
+    // no more data to read since in.get(c) is casted to false
+    return false;
+  }
+
+  *str_len = 0;
+  in.seekg(-1, istream::cur); // put back the first scanned char
   if (in.get(buffer, max_len, delimiter)) {
     *str_len = in.gcount();
     in.get(); // read the tailing delimiter
     return true;
+  }
+  if (in.eof()) {
+    cout << "Finished reading input stream" << endl;
+  } else if (in.fail()) {
+    cerr << "Failed reading input stream: " << strerror(errno) << endl;
   }
   return false;
 }
@@ -22,11 +37,6 @@ string FileManager::OutputFileName(const char* base_file_name, int file_index) {
   output_file_name += ".out.";
   output_file_name += to_string(file_index);
   return output_file_name;
-}
-
-FileManager::~FileManager() {
-//  in_.close();
-//  out_.close();
 }
 
 bool FileManager::Open() {

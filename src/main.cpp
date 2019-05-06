@@ -16,7 +16,7 @@ int main(int argc, char **argv) {
   uint64_t mem_limit = atoi(argv[3]) * 1024L * 1024L;
   cout << "Number of results: " << num_results << endl;
   cout << "Mem Limit: " << mem_limit << " bytes" << endl;
-  cout << "Processsing input file " << file_path << "..." << endl;
+  cout << "Processing input file " << file_path << "..." << endl;
   if (num_results <= 0 || mem_limit <= 0) {
     cerr << "Illegal arguments!" << endl;
     return 1;

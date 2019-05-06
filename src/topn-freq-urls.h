@@ -41,6 +41,7 @@ class TopNFreqUrls {
   void UpdateHeap(ResultTuple tuple, std::priority_queue<ResultTuple>* heap);
 
   int num_results_;
+  uint64_t urls_scanned_ = 0;
   char url_buf_[MAX_URL_LEN + 1];
   MemTracker mem_tracker_;
   MemPool mem_pool_;

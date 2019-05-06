@@ -16,7 +16,6 @@ const unsigned int MAX_URL_LEN = 1025;
 class FileManager {
  public:
   FileManager(const char* file_name): file_name_(file_name) {}
-  ~FileManager();
 
   bool Open();
   bool Close();
@@ -26,7 +25,7 @@ class FileManager {
   int TotalOutputFiles() { return output_files_; }
 
   /// Read a URL (separated by '\n' by defaults) into the 'buffer' and return the
-  /// URL length in 'str_len'. Return false if no more data to read.
+  /// URL length in 'str_len'. Return true if successfully read a line.
   static bool ReadLine(std::istream& in, unsigned int max_len, char* buffer,
       size_t* str_len, char delimiter = '\n');
 

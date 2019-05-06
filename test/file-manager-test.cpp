@@ -28,6 +28,19 @@ TEST(FileManagerTest, ReadLine) {
   EXPECT_FALSE(FileManager::ReadLine(input, MAX_URL_LEN, buffer, &url_len));
 }
 
+TEST(FileManagerTest, ReadLongLine) {
+  istringstream input("0123456789\n\n01234567890\n");
+  char buffer[11];
+  size_t url_len;
+  EXPECT_TRUE(FileManager::ReadLine(input, 11, buffer, &url_len));
+  EXPECT_EQ(string(buffer, url_len), "0123456789");
+  EXPECT_EQ(url_len, 10);
+  EXPECT_TRUE(FileManager::ReadLine(input, 11, buffer, &url_len));
+  EXPECT_EQ(string(buffer, url_len), "0123456789");
+  EXPECT_EQ(url_len, 10);
+  EXPECT_FALSE(FileManager::ReadLine(input, 11, buffer, &url_len));
+}
+
 TEST(FileMergerTest, ReadTuple) {
   MemTracker mem_tracker(MAX_URL_LEN * 100);
   MemPool pool(&mem_tracker);
