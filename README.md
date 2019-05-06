@@ -15,6 +15,7 @@ cd gen-data
 ```
 
 ## Build
+This project can be built in MacOS or Ubuntu 14.04 with 64bit CPU.
 ```
 ./build.sh
 ```
